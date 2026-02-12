@@ -1,0 +1,55 @@
+{
+  "name": "multi-tenant-server",
+  "version": "1.0.0",
+  "description": "Production-grade multi-tenant SaaS application with comprehensive security",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest",
+    "test:encryption": "node tests/test-encryption.js",
+    "test:isolation": "node tests/test-isolation.js",
+    "test:rate-limit": "node tests/test-rate-limit.js",
+    "test:all": "npm run test:encryption && npm run test:isolation && npm run test:rate-limit",
+    "backup:tenant": "bash src/scripts/backupTenant.sh",
+    "restore:tenant": "bash src/scripts/restoreTenant.sh",
+    "generate:secret": "node -e \"console.log('JWT_SECRET=' + require('crypto').randomBytes(32).toString('hex')); console.log('ENCRYPTION_SECRET=' + require('crypto').randomBytes(32).toString('base64'));\""
+  },
+  "keywords": [
+    "multi-tenant",
+    "saas",
+    "isolation",
+    "security",
+    "rate-limiting",
+    "audit-logging",
+    "encryption",
+    "mongodb",
+    "redis",
+    "prometheus"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async_hooks": "^1.0.0",
+    "bcryptjs": "^3.0.3",
+    "commander": "^14.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.1.5",
+    "node-cron": "^3.0.3",
+    "prom-client": "^15.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.11",
+    "supertest": "^7.2.2",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
