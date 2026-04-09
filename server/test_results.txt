@@ -1,9 +1,0 @@
-﻿========================================
-Tenant Isolation Test
-========================================
-
-Γ£ô Connected to MongoDB
-
-Test 1: Creating data for Tenant A
-
-Γ£ô MongoDB connection closed
