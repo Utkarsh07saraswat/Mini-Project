@@ -1,0 +1,32 @@
+{
+  "name": "multi-tenant-app",
+  "version": "1.0.0",
+  "description": "Multi-tenant SaaS application with client-server architecture",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "start:server": "cd server && npm start",
+    "start:client": "cd client && npm run preview",
+    "build:client": "cd client && npm run build",
+    "test:server": "cd server && npm test",
+    "test:all": "cd server && npm run test:all"
+  },
+  "keywords": [
+    "multi-tenant",
+    "saas",
+    "client-server",
+    "react",
+    "express",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.5.0",
+    "concurrently": "^8.2.2"
+  }
+}
