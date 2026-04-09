@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # Multi-tenant application
+  app:
+    build: .
+    container_name: multi-tenant-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/multi_tenant
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET}
+      - ENCRYPTION_SECRET=${ENCRYPTION_SECRET}
+      - BACKUP_ENCRYPTION_KEY=${BACKUP_ENCRYPTION_KEY}
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./backups:/app/backups
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - multi-tenant-network
+
+  # MongoDB database
+  mongodb:
+    image: mongo:7.0
+    container_name: multi-tenant-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=multi_tenant
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+    restart: unless-stopped
+    networks:
+      - multi-tenant-network
+    command: mongod --auth
+
+  # Redis cache
+  redis:
+    image: redis:7-alpine
+    container_name: multi-tenant-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - multi-tenant-network
+    command: redis-server --appendonly yes
+
+  # Prometheus monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: multi-tenant-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: unless-stopped
+    networks:
+      - multi-tenant-network
+
+  # Grafana dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: multi-tenant-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - multi-tenant-network
+
+volumes:
+  mongodb-data:
+  mongodb-config:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  multi-tenant-network:
+    driver: bridge
